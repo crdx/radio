@@ -4,11 +4,11 @@ This repo holds 3 generations of BBC radio player.
 
 ## `sh/`
 
-The first ever version: a simple shell script.
+A simple shell script.
 
 ## `cli/`
 
-The second attempt. A slightly better command line interface, written in Ruby.
+A slightly better command line interface, written in Ruby.
 
 ## `gui/`
 
