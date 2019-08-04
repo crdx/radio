@@ -1,8 +1,6 @@
 require 'open-uri'
-require 'nokogiri'
-require 'tty-table'
 
-class Station
+class RadioStation
   AIRWAVES = %w{radio_one radio_two radio_three radio_fourfm radio_five_live 6music}
 
   def initialize channel
@@ -14,13 +12,13 @@ class Station
 
   def freq
     AIRWAVES[@channel - 1]
-  end  
+  end
 
   def found?
     @channel > 0 && @channel < AIRWAVES.length
   end
 
-  def playlist_url 
+  def playlist_url
     "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_#{freq}.m3u8"
   end
 
@@ -32,12 +30,12 @@ class Station
     @stopped = true
   end
 
-  def play redirect_stderr = true
+  def play(redirect_stderr = true)
     @stopped = false
     params = redirect_stderr ? [ :err => [ :child, :out ] ] : []
     IO.popen(mpv_command, *params) do |io|
       while line = io.gets
-        yield line
+        yield line if block_given?
         break if @stopped
       end
       Process.kill 'KILL', io.pid
@@ -45,6 +43,10 @@ class Station
   end
 
   def last_played_rows
+    return []
+
+    require 'nokogiri'
+
     doc = Nokogiri::HTML(open(last_played_url))
 
     doc.css('.music-track__middle-box').map do |song|
@@ -56,10 +58,11 @@ class Station
   end
 
   def last_played
+    require 'tty-table'
     TTY::Table.new([ 'Time', 'Artist', 'Track' ], last_played_rows).render(:unicode)
   end
 
-  private 
+  private
 
   def last_played_url
     "https://www.bbc.co.uk/music/tracks/find/radio#{@channel}"

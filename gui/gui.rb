@@ -1,7 +1,7 @@
 require 'gtk3'
 require 'pathname'
 
-def time_ago timestamp
+def time_ago(timestamp)
     delta = Time.now.to_i - timestamp
     case delta
     when 0..59         then "#{delta}s ago"
@@ -14,14 +14,14 @@ def time_ago timestamp
     end
 end
 
-def load_into_liststore store, rows
+def load_into_liststore(store, rows)
   store.clear
   rows.each do |row|
     store.append.set_values row
   end
 end
 
-def build_gui window_name: 'main_window', ns: nil, gui_file: 'gui.glade'
+def build_gui (window_name: 'main_window', ns: nil, gui_file: 'gui.glade')
   raise 'Missing namespace' if ns.nil?
 
   app = Gtk::Application.new ns, :flags_none
@@ -31,8 +31,8 @@ def build_gui window_name: 'main_window', ns: nil, gui_file: 'gui.glade'
   builder.set_application app
 
   app.signal_connect :activate do
-    main_window = builder.get_object window_name
-    
+    main_window = builder.get_object(window_name)
+
     yield app, builder, main_window
 
     app.add_window main_window
