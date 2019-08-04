@@ -1,17 +1,21 @@
 #!/usr/bin/env ruby
 
+Dir.chdir __dir__ do
+  require 'bundler/setup'
+end
+
 require 'thread'
 
 require_relative './gui'
-require_relative '../station'
+require_relative '../lib/radio_station'
 
 Thread.abort_on_exception = true
 
 class RadioGUI
-  def initialize app, builder, window
-    @app = app 
+  def initialize(app, builder, window)
+    @app = app
     @builder = builder
-    @window = window 
+    @window = window
     @player = nil
     @station = nil
 
@@ -38,7 +42,7 @@ class RadioGUI
   end
 
   def set_window_size
-    @window.set_size_request 600, 500
+    @window.set_size_request 700, 600
   end
 
   def connect_event_handlers
@@ -46,8 +50,8 @@ class RadioGUI
     @btn_refresh_last_played.signal_connect :clicked do refresh_last_played_async end
     @channel_selector.signal_connect        :changed do change_channel end
 
-    @window.signal_connect :key_press_event do |_, e| 
-      toggle_play_state if e.keyval == 32 
+    @window.signal_connect :key_press_event do |_, e|
+      toggle_play_state if e.keyval == 32
     end
   end
 
@@ -60,18 +64,18 @@ class RadioGUI
 
     @tree_last_played.append_column time
     @tree_last_played.append_column artist
-    @tree_last_played.append_column track 
+    @tree_last_played.append_column track
 
     @last_played_store = Gtk::ListStore.new(String, String, String)
     @tree_last_played.set_model @last_played_store
   end
 
   def toggle_play_state
-    if @player.nil? 
+    if @player.nil?
       start_player
     else
       stop_player
-    end    
+    end
   end
 
   def statusbar_msg
@@ -83,7 +87,7 @@ class RadioGUI
   end
 
   def keep_statusbar_updated
-    Thread.new do 
+    Thread.new do
       loop do
         @statusbar.push @statusbar_context_id, statusbar_msg
         sleep 1
@@ -95,7 +99,7 @@ class RadioGUI
     Thread.new do
       loop do
         refresh_last_played
-        sleep 60
+        sleep 30
       end
     end
   end
@@ -106,7 +110,7 @@ class RadioGUI
     refresh_last_played_async
   end
 
-  def refresh_last_played_async 
+  def refresh_last_played_async
     Thread.new do
       refresh_last_played
     end
@@ -125,7 +129,7 @@ class RadioGUI
   end
 
   def start_player
-    @station = Station.new(@channel_selector.active_text)
+    @station = RadioStation.new(@channel_selector.active_text)
     @player = Thread.new do
       @station.play do |s|
         if s =~ /A: (\d{2}:\d{2}:\d{2})/
@@ -137,7 +141,7 @@ class RadioGUI
     @btn_play_pause.set_image @stop_icon
     @lbl_status.set_text "Connecting to radio #{@station.channel}..."
     @btn_play_pause.set_label 'Stop'
-    @window.set_title "Radio #{@station.channel}"    
+    @window.set_title "Radio #{@station.channel}"
   end
 
   def stop_player
@@ -146,7 +150,7 @@ class RadioGUI
     @btn_play_pause.set_image @play_icon
     @lbl_status.set_text 'Not connected'
     @btn_play_pause.set_label 'Play'
-    @window.set_title 'Radio off'    
+    @window.set_title 'Radio off'
   end
 
   def terminate
@@ -158,9 +162,9 @@ class RadioGUI
 end
 
 build_gui(ns: 'org.crdx.radio') do |app, builder, window|
-  gui = RadioGUI.new app, builder, window
+  gui = RadioGUI.new(app, builder, window)
 
-  window.signal_connect :delete_event do 
+  window.signal_connect :delete_event do
     gui.stop_player
     false
   end
