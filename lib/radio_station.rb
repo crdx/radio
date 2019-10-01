@@ -1,14 +1,14 @@
 require 'open-uri'
 
 class RadioStation
-  AIRWAVES = %w{radio_one radio_two radio_three radio_fourfm radio_five_live 6music}
+  AIRWAVES = %w{radio1 radio2 radio3 radio4fm radio5live 6music}
+
+  attr_reader :channel
 
   def initialize channel
     @channel = channel.to_i
     self
   end
-
-  attr_reader :channel
 
   def freq
     AIRWAVES[@channel - 1]
@@ -19,7 +19,7 @@ class RadioStation
   end
 
   def playlist_url
-    "http://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high/ak/bbc_#{freq}.m3u8"
+    "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_#{freq}_mf_p"
   end
 
   def mpv_command
