@@ -43,16 +43,15 @@ class RadioStation
   end
 
   def last_played_rows
-    return []
+    return [] if @channel != 1
 
     require 'nokogiri'
 
     doc = Nokogiri::HTML(open(last_played_url))
 
-    doc.css('.music-track__middle-box').map do |song|
-      artist = song.css('[data-marker=music-track-artist-name]').text.strip
-      track  = song.css('[data-marker=music-track-title]').text.strip
-      time   = song.css('.music-track__time').text.strip
+    doc.css('.post-content')[0..10].map do |song|
+      artist, track = song.css('a').first[:title].strip.split(' - ', 2)
+      time = song.css('.date span').text.strip.match(/\d+:\d+(am|pm)/).to_s
       [ time, artist, track  ].map { |col| col.gsub /\s+/, ' ' }
     end
   end
@@ -65,6 +64,6 @@ class RadioStation
   private
 
   def last_played_url
-    "https://www.bbc.co.uk/music/tracks/find/radio#{@channel}"
+    "https://www.radio1playlist.com/"
   end
 end
