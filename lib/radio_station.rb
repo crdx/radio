@@ -49,7 +49,7 @@ class RadioStation
 
     doc = Nokogiri::HTML(open(last_played_url))
 
-    doc.css('.post-content')[0..10].map do |song|
+    doc.css('.post-content')[0..20].map do |song|
       artist, track = song.css('a').first[:title].strip.split(' - ', 2)
       time = song.css('.date span').text.strip.match(/\d+:\d+(am|pm)/).to_s
       [ time, artist, track  ].map { |col| col.gsub /\s+/, ' ' }
