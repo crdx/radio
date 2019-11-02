@@ -14,6 +14,10 @@ A slightly better command line interface, written in Ruby.
 
 GTK UI in Ruby, with the help of Glade.
 
+## Gem dependencies
+
+The `gobject-instrospection` system package.
+
 ## Bugs or contributions
 
 Open an [issue](http://github.com/crdx/radio/issues) or send a [pull request](http://github.com/crdx/radio/pulls).
