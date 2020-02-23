@@ -131,9 +131,10 @@ class RadioGUI
   def start_player
     @station = RadioStation.new(@channel_selector.active_text)
     @player = Thread.new do
-      @station.play do |s|
-        if s =~ /A: (\d{2}:\d{2}:\d{2})/
-          @lbl_status.set_text $1
+      @station.play do |started|
+        # mpv no longer tells us the audio progress
+        if started
+          @lbl_status.set_text "Connected to radio #{@station.channel}"
         end
       end
     end

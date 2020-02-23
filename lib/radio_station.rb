@@ -34,15 +34,21 @@ class RadioStation
     @stopped = false
     params = redirect_stderr ? [ :err => [ :child, :out ] ] : []
     IO.popen(mpv_command, *params) do |io|
-      while line = io.gets
-        yield line if block_given?
+      # mpv no longer tells us the audio progress
+      yield true
+      loop do
+        sleep 1
         break if @stopped
       end
+
       Process.kill 'KILL', io.pid
     end
   end
 
   def last_played_rows
+    # https://www.radio1playlist.com is broken
+    return []
+
     return [] if @channel != 1
 
     require 'nokogiri'
