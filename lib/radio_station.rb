@@ -32,16 +32,16 @@ class RadioStation
     uri = URI(playlist_url)
     Net::HTTP.start(uri.host, uri.port) do |http|
       req = Net::HTTP::Get.new(uri)
-      http.request req do |response|
+      http.request(req) do |response|
         IO.popen('mpv -', 'w+') do |mpv|
           response.read_body do |chunk|
-            mpv.write(chunk)
-            yield chunk.length
             if @stopped
               Process.kill 'KILL', mpv.pid
               http.finish
               return
             end
+            mpv.write chunk
+            yield chunk.length
           end
         end
       end
