@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'net/http'
 
 class RadioStation
   AIRWAVES = %w{radio1 radio2 radio3 radio4fm radio5live 6music}
@@ -22,38 +23,37 @@ class RadioStation
     "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_#{freq}_mf_p"
   end
 
-  def mpv_command
-    "mpv --msg-level=ffmpeg=error #{playlist_url}"
-  end
-
   def stop
     @stopped = true
   end
 
   def play(redirect_stderr = true)
     @stopped = false
-    params = redirect_stderr ? [ :err => [ :child, :out ] ] : []
-    IO.popen(mpv_command, *params) do |io|
-      # mpv no longer tells us the audio progress
-      yield true
-      loop do
-        sleep 1
-        break if @stopped
+    uri = URI(playlist_url)
+    Net::HTTP.start(uri.host, uri.port) do |http|
+      req = Net::HTTP::Get.new(uri)
+      http.request req do |response|
+        IO.popen('mpv -', 'w+') do |mpv|
+          response.read_body do |chunk|
+            mpv.write(chunk)
+            yield chunk.length
+            if @stopped
+              Process.kill 'KILL', mpv.pid
+              http.finish
+              return
+            end
+          end
+        end
       end
-
-      Process.kill 'KILL', io.pid
     end
   end
 
   def last_played_rows
-    # https://www.radio1playlist.com is broken
-    return []
-
     return [] if @channel != 1
 
     require 'nokogiri'
 
-    doc = Nokogiri::HTML(open(last_played_url))
+    doc = Nokogiri::HTML(URI.open(last_played_url))
 
     doc.css('.post-content')[0..20].map do |song|
       artist, track = song.css('a').first[:title].strip.split(' - ', 2)

@@ -128,14 +128,26 @@ class RadioGUI
     end
   end
 
+  def bytes2human(b)
+    return '0B' if b <= 0
+    k = 1024
+    suffixes = ['T', 'G', 'M', 'K', 'B']
+
+    suffixes.each_with_index do |suffix, i|
+      threshold = k ** (suffixes.length - i - 1)
+      if b >= threshold
+        return (b / threshold).to_s + suffix
+      end
+    end
+  end
+
   def start_player
     @station = RadioStation.new(@channel_selector.active_text)
     @player = Thread.new do
-      @station.play do |started|
-        # mpv no longer tells us the audio progress
-        if started
-          @lbl_status.set_text "Connected to radio #{@station.channel}"
-        end
+      total_bytes = 0
+      @station.play do |bytes|
+        total_bytes += bytes
+        @lbl_status.set_text bytes2human(total_bytes) + ' transferred'
       end
     end
 
