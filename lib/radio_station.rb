@@ -60,6 +60,8 @@ class RadioStation
       time = song.css('.date span').text.strip.match(/\d+:\d+(am|pm)/).to_s
       [ time, artist, track  ].map { |col| col.gsub /\s+/, ' ' }
     end
+  rescue
+    []
   end
 
   def last_played
