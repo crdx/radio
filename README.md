@@ -16,7 +16,7 @@ GTK UI in Ruby, with the help of Glade.
 
 ## Gem dependencies
 
-The `gobject-instrospection` system package.
+The `gobject-introspection` system package.
 
 ## Bugs or contributions
 
