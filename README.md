@@ -20,7 +20,7 @@ The `gobject-introspection` system package.
 
 ## Bugs or contributions
 
-Open an [issue](http://github.com/crdx/radio/issues) or send a [pull request](http://github.com/crdx/radio/pulls).
+Open an [issue](https://github.com/crdx/radio/issues) or send a [pull request](https://github.com/crdx/radio/pulls).
 
 ## Licence
 
