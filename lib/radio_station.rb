@@ -2,7 +2,14 @@ require 'open-uri'
 require 'net/http'
 
 class RadioStation
-  AIRWAVES = %w{radio1 radio2 radio3 radio4fm radio5live 6music}
+  AIRWAVES = %w{
+    bbc_radio_one
+    bbc_radio_two
+    bbc_radio_three
+    bbc_radio_fourfm
+    bbc_radio_five_live
+    bbc_6music
+  }
 
   attr_reader :channel
 
@@ -20,7 +27,7 @@ class RadioStation
   end
 
   def playlist_url
-    "http://bbcmedia.ic.llnwd.net/stream/bbcmedia_#{freq}_mf_p"
+    "http://stream.live.vc.bbcmedia.co.uk/#{freq}"
   end
 
   def stop
