@@ -1,15 +1,4 @@
-#!/usr/bin/env ruby
-
-Dir.chdir(__dir__) do
-    require 'bundler/setup'
-end
-
-require_relative './gui'
-require_relative '../lib/radio_station'
-
-Thread.abort_on_exception = true
-
-class RadioGUI
+class UI
     def initialize(app, builder, window)
         @app = app
         @builder = builder
@@ -141,7 +130,7 @@ class RadioGUI
     end
 
     def start_player
-        @station = RadioStation.new(@channel_selector.active_text)
+        @station = Station.new(@channel_selector.active_text)
         @player = Thread.new do
             total_bytes = 0
             @station.play do |bytes|
@@ -173,11 +162,43 @@ class RadioGUI
     end
 end
 
-build_gui(ns: 'org.crdx.radio') do |app, builder, window|
-    gui = RadioGUI.new(app, builder, window)
-
-    window.signal_connect(:delete_event) do
-        gui.stop_player
-        false
+def time_ago(timestamp)
+    delta = Time.now.to_i - timestamp
+    case delta
+    when 0..59           then "#{delta}s ago"
+    when 60              then 'a minute ago'
+    when 61..119         then 'about a minute ago'
+    when 120..3599       then "#{delta / 60} minutes ago"
+    when 3600..86_399    then "#{(delta / 3600).round} hours ago"
+    when 86_400..259_199 then "#{(delta / 86_400).round} days ago"
+    else Time.at(timestamp).strftime('%d %B %Y %H:%M')
     end
+end
+
+def load_into_liststore(store, rows)
+    store.clear
+    rows.each do |row|
+        store.append.set_values(row)
+    end
+end
+
+def build_ui(window_name: 'main_window', ns: nil, file: '../ui/main.glade')
+    raise 'Missing namespace' if ns.nil?
+
+    app = Gtk::Application.new(ns, :flags_none)
+
+    builder = Gtk::Builder.new
+    builder.add_from_file(File.dirname(__FILE__) + '/' + file)
+    builder.set_application(app)
+
+    app.signal_connect(:activate) do
+        main_window = builder.get_object(window_name)
+
+        yield app, builder, main_window
+
+        app.add_window(main_window)
+        main_window.show_all
+    end
+
+    app.run
 end

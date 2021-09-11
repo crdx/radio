@@ -1,7 +1,4 @@
-require 'open-uri'
-require 'net/http'
-
-class RadioStation
+class Station
     AIRWAVES = %w[
         bbc_radio_one
         bbc_radio_two
@@ -55,29 +52,19 @@ class RadioStation
     end
 
     def last_played_rows
-        return [] if @channel != 1
+        # Does not currently work.
+        return []
 
-        require 'nokogiri'
+        # return [] if @channel != 1 || last_played_url.nil?
 
-        doc = Nokogiri::HTML(URI.parse(last_played_url).open)
+        # doc = Nokogiri::HTML(URI.parse('https://www.radio1playlist.com/').open)
 
-        doc.css('.post-content')[0..20].map do |song|
-            artist, track = song.css('a').first[:title].strip.split(' - ', 2)
-            time = song.css('.date span').text.strip.match(/\d+:\d+(am|pm)/).to_s
-            [time, artist, track].map { |col| col.gsub(/\s+/, ' ') }
-        end
+        # doc.css('.post-content')[0..20].map do |song|
+        #     artist, track = song.css('a').first[:title].strip.split(' - ', 2)
+        #     time = song.css('.date span').text.strip.match(/\d+:\d+(am|pm)/).to_s
+        #     [time, artist, track].map { |col| col.gsub(/\s+/, ' ') }
+        # end
     rescue
         []
-    end
-
-    def last_played
-        require 'tty-table'
-        TTY::Table.new(%w[Time Artist Track], last_played_rows).render(:unicode)
-    end
-
-    private
-
-    def last_played_url
-        'https://www.radio1playlist.com/'
     end
 end

@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+
+require 'gtk3'
+
+require_relative '../lib/ui'
+require_relative '../lib/station'
+
+Thread.abort_on_exception = true
+
+build_ui(ns: 'org.crdx.radio') do |app, builder, window|
+    ui = UI.new(app, builder, window)
+
+    window.signal_connect(:delete_event) do
+        ui.stop_player
+        false
+    end
+end

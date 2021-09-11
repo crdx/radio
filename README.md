@@ -1,20 +1,15 @@
 # radio
 
-This repo holds 3 generations of BBC radio player.
+**radio** is a BBC radio (1-6) player GTK GUI.
 
-## `sh/`
+## Usage
 
-A simple shell script.
+```bash
+bundle
+bundle exec bin/radio
+```
 
-## `cli/`
-
-A slightly better command line interface, written in Ruby.
-
-## `gui/`
-
-GTK UI in Ruby, with the help of Glade.
-
-## Gem dependencies
+## Dependencies
 
 The `gobject-introspection` system package.
 
