@@ -35,6 +35,7 @@ GEM
       cairo-gobject (= 3.4.9)
       gobject-introspection (= 3.4.9)
     pkg-config (1.4.6)
+    rake (13.0.6)
     red-colors (0.3.0)
       matrix
 
@@ -44,6 +45,7 @@ PLATFORMS
 
 DEPENDENCIES
   gtk3 (~> 3.3)
+  rake (~> 13.0)
 
 BUNDLED WITH
    2.2.26
