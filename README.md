@@ -13,7 +13,7 @@ bundle exec bin/radio
 
 The `gobject-introspection` system package.
 
-## Bugs or contributions
+## Contributions
 
 Open an [issue](https://github.com/crdx/radio/issues) or send a [pull request](https://github.com/crdx/radio/pulls).
 
