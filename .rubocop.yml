@@ -132,7 +132,7 @@ Layout/LineLength:
   AutoCorrect: yes
 
 Metrics/ClassLength:
-  Max: 135
+  Max: 140
   CountAsOne:
     - array
     - hash
