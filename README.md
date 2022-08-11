@@ -19,4 +19,4 @@ Open an [issue](https://github.com/crdx/radio/issues) or send a [pull request](h
 
 ## Licence
 
-[MIT](LICENCE.md).
+[GPLv3](LICENCE).
