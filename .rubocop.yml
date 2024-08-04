@@ -93,7 +93,7 @@ Style/MethodCallWithArgsParentheses:
     - attr_reader
     - attr_accessor
     - include
-    - add_runtime_dependency
+    - add_dependency
     - gem
     - source
 
